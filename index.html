@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מחשבון מעשר</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="site-header">
+    <div class="site-header__badge">🕎</div>
+    <h1>מחשבון מעשר</h1>
+    <p class="subtitle">חשבו כמה מגיע להפריש, ואז שלחו את התרומה בקלות</p>
+  </header>
+
+  <main class="card">
+
+    <!-- שלב 1: הכנסה -->
+    <section class="step">
+      <div class="step__head">
+        <span class="step__num">1</span>
+        <h2>ההכנסה שלך</h2>
+      </div>
+
+      <label class="field">
+        <span class="field__label">סכום ההכנסה (₪)</span>
+        <input type="number" id="income" inputmode="decimal" min="0" step="0.01" placeholder="לדוגמה: 8000">
+      </label>
+
+      <label class="field">
+        <span class="field__label">מקור ההכנסה</span>
+        <select id="incomeSource">
+          <option value="salary">משכורת</option>
+          <option value="bonus">בונוס / מענק</option>
+          <option value="business">רווח מעסק</option>
+          <option value="investment">רווח מהשקעות</option>
+          <option value="gift">מתנה</option>
+          <option value="inheritance">ירושה</option>
+          <option value="other">אחר</option>
+        </select>
+      </label>
+      <p class="hint" id="sourceHint"></p>
+    </section>
+
+    <!-- שלב 2: סוג החיוב -->
+    <section class="step">
+      <div class="step__head">
+        <span class="step__num">2</span>
+        <h2>סוג החיוב</h2>
+      </div>
+
+      <div class="rate-options" role="radiogroup" aria-label="סוג החיוב">
+        <label class="rate-option">
+          <input type="radio" name="rate" value="10" checked>
+          <span class="rate-option__title">מעשר</span>
+          <span class="rate-option__pct">10%</span>
+        </label>
+        <label class="rate-option">
+          <input type="radio" name="rate" value="20">
+          <span class="rate-option__title">חומש</span>
+          <span class="rate-option__pct">20%</span>
+        </label>
+        <label class="rate-option rate-option--custom">
+          <input type="radio" name="rate" value="custom">
+          <span class="rate-option__title">אחוז מותאם אישית</span>
+          <input type="number" id="customRate" min="0" max="100" step="0.1" placeholder="%" class="rate-option__input" disabled>
+        </label>
+      </div>
+    </section>
+
+    <!-- תוצאה -->
+    <section class="result">
+      <span class="result__label">סכום המעשר להפרשה</span>
+      <span class="result__amount" id="resultAmount">₪0.00</span>
+      <span class="result__breakdown" id="resultBreakdown"></span>
+    </section>
+
+    <!-- שלב 3: תשלום -->
+    <section class="step">
+      <div class="step__head">
+        <span class="step__num">3</span>
+        <h2>שליחת התרומה</h2>
+      </div>
+
+      <div class="pay-tabs" role="tablist" aria-label="אמצעי תשלום">
+        <button class="pay-tab active" data-tab="bit" type="button">Bit</button>
+        <button class="pay-tab" data-tab="credit" type="button">אשראי</button>
+        <button class="pay-tab" data-tab="bank" type="button">העברה בנקאית</button>
+        <button class="pay-tab" data-tab="share" type="button">שיתוף</button>
+      </div>
+
+      <div class="pay-panel active" id="panel-bit">
+        <p class="pay-panel__desc">פתיחת אפליקציית Bit במכשיר הנייד. הסכום יועתק אוטומטית ללוח כדי שתוכלו להדביק אותו בהעברה.</p>
+        <div class="pay-panel__actions">
+          <button class="btn btn--primary" id="btnOpenBit" type="button">פתיחת Bit</button>
+          <button class="btn btn--ghost" data-copy="amount" type="button">העתקת סכום</button>
+        </div>
+      </div>
+
+      <div class="pay-panel" id="panel-credit">
+        <p class="pay-panel__desc">אם יש לכם קישור תשלום אישי (למשל מעמותה או ספק סליקה), הדביקו אותו כאן לפתיחה מהירה.</p>
+        <label class="field">
+          <span class="field__label">קישור לתשלום (אופציונלי)</span>
+          <input type="url" id="creditLink" placeholder="https://...">
+        </label>
+        <div class="pay-panel__actions">
+          <button class="btn btn--primary" id="btnOpenCredit" type="button">פתיחת קישור תשלום</button>
+          <button class="btn btn--ghost" data-copy="amount" type="button">העתקת סכום</button>
+        </div>
+      </div>
+
+      <div class="pay-panel" id="panel-bank">
+        <p class="pay-panel__desc">הזינו את פרטי החשבון לזיכוי (הפרטים נשארים בדפדפן שלכם בלבד ולא נשמרים).</p>
+        <div class="bank-grid">
+          <label class="field">
+            <span class="field__label">בנק</span>
+            <input type="text" id="bankName" placeholder="לדוגמה: בנק לאומי">
+          </label>
+          <label class="field">
+            <span class="field__label">סניף</span>
+            <input type="text" id="bankBranch" placeholder="123">
+          </label>
+          <label class="field">
+            <span class="field__label">מספר חשבון</span>
+            <input type="text" id="bankAccount" placeholder="123456">
+          </label>
+        </div>
+        <div class="pay-panel__actions">
+          <button class="btn btn--primary" id="btnCopyBank" type="button">העתקת פרטי ההעברה</button>
+        </div>
+      </div>
+
+      <div class="pay-panel" id="panel-share">
+        <p class="pay-panel__desc">שליחת פרטי ההפרשה בוואטסאפ, למשל כדי לתאם עם מי שמקבל את התרומה.</p>
+        <div class="pay-panel__actions">
+          <button class="btn btn--primary" id="btnShareWhatsapp" type="button">שיתוף בוואטסאפ</button>
+          <button class="btn btn--ghost" data-copy="amount" type="button">העתקת סכום</button>
+        </div>
+      </div>
+
+      <p class="copy-toast" id="copyToast" role="status" aria-live="polite"></p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>המחשבון הינו כלי עזר כללי בלבד. לשאלות הלכתיות בנוגע להפרשת מעשר כספים יש להתייעץ עם רב מוסמך. אין שמירה של הנתונים בשרת — הכל נשאר בדפדפן שלכם.</p>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
