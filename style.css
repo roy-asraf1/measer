@@ -104,6 +104,68 @@ body {
   font-weight: 700;
 }
 
+.segmented {
+  display: flex;
+  gap: 6px;
+  background: #f4f2ec;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 14px;
+}
+
+.segmented__opt {
+  flex: 1;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: 9px;
+  padding: 9px 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.segmented__opt input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.segmented__opt:has(input:checked) {
+  background: #fff;
+  color: var(--accent-strong);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tax-breakdown {
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+
+.tax-breakdown.hidden,
+#creditPointsField.hidden {
+  display: none;
+}
+
+.tax-breakdown__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+.tax-breakdown__row--total {
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+  padding-top: 8px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 15px;
+}
+
 .field {
   display: flex;
   flex-direction: column;
