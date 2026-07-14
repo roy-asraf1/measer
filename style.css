@@ -138,6 +138,60 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.credit-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.credit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.credit-item--fixed {
+  cursor: default;
+  background: #f4f2ec;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.credit-item__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.credit-item__check input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 17px;
+  height: 17px;
+}
+
+.credit-item__pts {
+  font-weight: 700;
+  color: var(--accent-strong);
+  flex-shrink: 0;
+}
+
+.credit-item--input {
+  cursor: default;
+  flex-wrap: wrap;
+}
+
+.credit-item__field {
+  width: 80px;
+  padding: 7px 9px;
+  font-size: 14px;
+}
+
 .tax-breakdown {
   margin-top: 6px;
   padding-top: 14px;
@@ -145,7 +199,8 @@ body {
 }
 
 .tax-breakdown.hidden,
-#creditPointsField.hidden {
+#creditPointsField.hidden,
+#employmentField.hidden {
   display: none;
 }
 

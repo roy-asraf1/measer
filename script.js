@@ -2,8 +2,13 @@
   const incomeInput = document.getElementById('income');
   const incomeLabel = document.getElementById('incomeLabel');
   const incomeModeInputs = document.querySelectorAll('input[name="incomeMode"]');
+  const employmentField = document.getElementById('employmentField');
+  const employmentInputs = document.querySelectorAll('input[name="employment"]');
   const creditPointsField = document.getElementById('creditPointsField');
-  const creditPointsInput = document.getElementById('creditPoints');
+  const creditWoman = document.getElementById('creditWoman');
+  const creditSingleParent = document.getElementById('creditSingleParent');
+  const creditExtra = document.getElementById('creditExtra');
+  const creditTotal = document.getElementById('creditTotal');
   const taxBreakdown = document.getElementById('taxBreakdown');
   const breakdownTax = document.getElementById('breakdownTax');
   const breakdownNi = document.getElementById('breakdownNi');
@@ -27,10 +32,12 @@
     { upTo: Infinity, rate: 0.50 }
   ];
   const CREDIT_POINT_VALUE = 242; // ₪ לחודש, 2026
-  const NI_TIER1_CAP = 7522;
-  const NI_TIER1_RATE = 0.0427;
-  const NI_TIER2_CAP = 51910;
-  const NI_TIER2_RATE = 0.1217;
+
+  // ביטוח לאומי + מס בריאות משולבים, שכיר מול עצמאי, 2026
+  const NI_RATES = {
+    employee: { tier1Cap: 7522, tier1Rate: 0.0427, tier2Cap: 51910, tier2Rate: 0.1217 },
+    selfEmployed: { tier1Cap: 7703, tier1Rate: 0.077, tier2Cap: 51910, tier2Rate: 0.18 }
+  };
 
   function calcIncomeTax(gross) {
     let tax = 0;
@@ -43,15 +50,30 @@
     return tax;
   }
 
-  function calcNationalInsurance(gross) {
-    const tier1 = Math.min(gross, NI_TIER1_CAP) * NI_TIER1_RATE;
-    const tier2 = gross > NI_TIER1_CAP ? (Math.min(gross, NI_TIER2_CAP) - NI_TIER1_CAP) * NI_TIER2_RATE : 0;
+  function calcNationalInsurance(gross, employment) {
+    const rates = NI_RATES[employment] || NI_RATES.employee;
+    const tier1 = Math.min(gross, rates.tier1Cap) * rates.tier1Rate;
+    const tier2 = gross > rates.tier1Cap ? (Math.min(gross, rates.tier2Cap) - rates.tier1Cap) * rates.tier2Rate : 0;
     return tier1 + tier2;
   }
 
   function getIncomeMode() {
     const checked = document.querySelector('input[name="incomeMode"]:checked');
     return checked ? checked.value : 'gross';
+  }
+
+  function getEmploymentStatus() {
+    const checked = document.querySelector('input[name="employment"]:checked');
+    return checked ? checked.value : 'employee';
+  }
+
+  function getCreditPoints() {
+    let total = 2.25;
+    if (creditWoman.checked) total += 0.5;
+    if (creditSingleParent.checked) total += 1;
+    const extra = parseFloat(creditExtra.value);
+    total += isNaN(extra) || extra < 0 ? 0 : extra;
+    return total;
   }
 
   const SOURCE_HINTS = {
@@ -89,12 +111,13 @@
     let base = validIncome;
 
     if (mode === 'gross') {
-      const points = parseFloat(creditPointsInput.value);
-      const validPoints = isNaN(points) || points < 0 ? 0 : points;
+      const points = getCreditPoints();
+      creditTotal.textContent = points.toFixed(2);
 
+      const employment = getEmploymentStatus();
       const taxBeforeCredit = calcIncomeTax(validIncome);
-      const tax = Math.max(0, taxBeforeCredit - validPoints * CREDIT_POINT_VALUE);
-      const ni = calcNationalInsurance(validIncome);
+      const tax = Math.max(0, taxBeforeCredit - points * CREDIT_POINT_VALUE);
+      const ni = calcNationalInsurance(validIncome, employment);
       const net = Math.max(0, validIncome - tax - ni);
 
       breakdownTax.textContent = '-' + formatCurrency(tax);
@@ -115,11 +138,13 @@
   function updateIncomeModeUI() {
     const mode = getIncomeMode();
     if (mode === 'gross') {
-      incomeLabel.textContent = 'משכורת ברוטו לחודש (₪)';
+      incomeLabel.textContent = 'משכורת/הכנסה ברוטו לחודש (₪)';
+      employmentField.classList.remove('hidden');
       creditPointsField.classList.remove('hidden');
       taxBreakdown.classList.remove('hidden');
     } else {
       incomeLabel.textContent = 'סכום נטו (₪)';
+      employmentField.classList.add('hidden');
       creditPointsField.classList.add('hidden');
       taxBreakdown.classList.add('hidden');
     }
@@ -133,8 +158,14 @@
   });
   updateIncomeModeUI();
 
+  employmentInputs.forEach((input) => {
+    input.addEventListener('change', calculate);
+  });
+
   incomeInput.addEventListener('input', calculate);
-  creditPointsInput.addEventListener('input', calculate);
+  creditWoman.addEventListener('change', calculate);
+  creditSingleParent.addEventListener('change', calculate);
+  creditExtra.addEventListener('input', calculate);
 
   sourceSelect.addEventListener('change', () => {
     sourceHint.textContent = SOURCE_HINTS[sourceSelect.value] || '';
