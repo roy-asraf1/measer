@@ -37,10 +37,15 @@ body {
   margin-bottom: 24px;
 }
 
-.site-header__badge {
-  font-size: 40px;
-  line-height: 1;
-  margin-bottom: 8px;
+.site-header__logo {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  border-radius: 16px;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  margin-bottom: 10px;
 }
 
 .site-header h1 {
